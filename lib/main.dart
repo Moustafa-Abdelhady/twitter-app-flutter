@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
   }
   final cookie = getCookie('acessToken');
    if (cookie != null) {
-      return MaterialApp(
+      return const MaterialApp(
         // theme: ThemeData(
         //   useMaterial3: true,
         // ),
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
         home: Splashpage(),
       );
     } else {
-      return MaterialApp(
+      return const MaterialApp(
         // theme: ThemeData(
         //   useMaterial3: true,
         // ),

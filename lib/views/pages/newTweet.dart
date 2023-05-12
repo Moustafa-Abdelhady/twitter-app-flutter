@@ -97,7 +97,7 @@ url,
 
  'content': content,
   'accesstoken':access_token,
- 'user': '2',
+ 'user': userid,
 
  },
 

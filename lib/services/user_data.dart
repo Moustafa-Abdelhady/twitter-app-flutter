@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'dart:convert';
 import 'dart:html' as html;
-import '../models/postsModel.dart';
+import '../models/userModel.dart';
 
-String Url = "http://localhost:8000/api/tweet";
+String Url = "http://localhost:8000/api/user/profile/";
 
 String? getCookie(String key) {
   final cookies = html.document.cookie!.split(';');
@@ -16,36 +16,35 @@ String? getCookie(String key) {
   return null;
 }
 
-class PostService {
-  Future<List<PostModel>> postData() async {
+class UserService {
+  Future<UserModel?> userData() async {
     final cookie = getCookie('acessToken');
-    String? access_token = cookie;
+    final usercookie = getCookie('username');
+    String? token = cookie;
+    String? username = usercookie;
+    print('UU${username}');
 
-    // String postLink = 'tweet';
+    UserModel? user;
 
-    List<PostModel> post = [];
     final dio = Dio();
 
     try {
-      final response = await dio.get('${Url}',
+      final response = await dio.get('${Url}${username}',
           options: Options(headers: {
             'Content-Type': 'application/json',
           }),
           queryParameters: ({
-            'access_token': access_token,
+            'access_token': token,
             'client_id': 'pYCSiQllhFFivVInLE7Y4DHEdYSqkGgG3jJMxcQd'
           }));
-      print('response.data ${response.data}');
-      if (response.statusCode == 200) {
-       
-        response.data.forEach((ele) {
-          PostModel posts = PostModel.fromJson(ele);
+      print('UserData ${response.data}');
+      if (response.statusCode == 200 && response.data != 0) {
+        print('good o');
 
-          print('postEle $ele');
+        // user = UserModel.fromJson(response.data);
 
-          print('posts $posts');
-          post.add(posts);
-        });
+        print('users $user');
+         return response.data;
       }
     } catch (e, stackTrace) {
       if (e is RangeError) {
@@ -54,8 +53,7 @@ class PostService {
         print(e);
       }
     }
-    // print('post[]: $post');
 
-    return post;
+   
   }
 }

@@ -13,6 +13,7 @@ class Profilepage extends StatefulWidget {
   const Profilepage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _ProfilepageState createState() => _ProfilepageState();
 }
 
@@ -21,14 +22,7 @@ class _ProfilepageState extends State<Profilepage> {
   List<PostModel> _post = [];
   // late Future<List<PostModel>> _postList;
   bool ischangecolor = false;
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    // _postList = PostService().postData();
-
-    getPostsData();
-  }
+ 
 
   Future<dynamic> getPostsData() async {
     // final postService = PostService();
@@ -39,6 +33,7 @@ class _ProfilepageState extends State<Profilepage> {
       _post = posts;
     });
   }
+  
 
   @override
   Widget build(BuildContext context) {

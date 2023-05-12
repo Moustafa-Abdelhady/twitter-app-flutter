@@ -21,8 +21,8 @@ class Loginpage extends StatefulWidget {
 class _LoginpageState extends State<Loginpage> {
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
-  GlobalKey<FormState> scaffoldKey = GlobalKey<FormState>();
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  // GlobalKey<FormState> scaffoldKey = GlobalKey<FormState>();
+  // GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   void setCookie(String key, String value) {
     html.document.cookie = '$key=$value; path=/';
   }
@@ -62,7 +62,7 @@ class _LoginpageState extends State<Loginpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffoldKey,
+      // key: scaffoldKey,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 11.0),
@@ -131,7 +131,7 @@ class _LoginpageState extends State<Loginpage> {
               ),
               SizedBox(height: 9.0),
               Form(
-                key: _formKey,
+                // key: _formKey,
                 child: Column(
                   children: [
                     // Padding(
@@ -193,7 +193,7 @@ class _LoginpageState extends State<Loginpage> {
                   onPressed: () async {
                     //  String email = username.text;
                     //  String password = password.text;
-                    if (_formKey.currentState!.validate()) {
+                    // if (_formKey.currentState!.validate()) {
                       /////test Api////
                       final authData = await getDataFromApi();
                       final dio = Dio();
@@ -227,11 +227,14 @@ class _LoginpageState extends State<Loginpage> {
                         //  final registerAuth = await registerDataFromApi();
                         //  print('registerAuthLogin : ${registerAuth}');
                         setCookie('acessToken', response.data['access_token']);
+                        setCookie('username', username.text);
                         
                         final cookie = getCookie('acessToken');
+                        final usercookie = getCookie('username');
                        
 
                         print(cookie);
+                        print(usercookie);
                        
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -259,7 +262,7 @@ class _LoginpageState extends State<Loginpage> {
                               'Request failed with status: ${response.statusCode}.');
                         }
                       }
-                    }
+                    // }
                     // Handle login logic here
                     // String email = username.text;
                     // String password = password.text;

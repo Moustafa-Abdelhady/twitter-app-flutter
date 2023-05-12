@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 // To parse this JSON data, do
 //
 //     final postModel = postModelFromJson(jsonString);

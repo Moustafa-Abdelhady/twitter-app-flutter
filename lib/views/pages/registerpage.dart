@@ -25,8 +25,8 @@ class _RegisterpageState extends State<Registerpage> {
   final TextEditingController _username = TextEditingController();
   final TextEditingController _birthdate = TextEditingController();
   final TextEditingController _password = TextEditingController();
-  GlobalKey<FormState> scaffoldKey = GlobalKey<FormState>();
- GlobalKey<FormState>  _formKey = GlobalKey<FormState>();
+  // GlobalKey<FormState> scaffoldKey = GlobalKey<FormState>();
+//  GlobalKey<FormState>  _formKey = GlobalKey<FormState>();
 
 ////test api////
   RegisterData registerAuthService = RegisterData();
@@ -64,7 +64,7 @@ class _RegisterpageState extends State<Registerpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffoldKey,
+      // key: scaffoldKey,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 11.0),
@@ -145,7 +145,7 @@ class _RegisterpageState extends State<Registerpage> {
               ),
               SizedBox(height: 3.0),
               Form(
-                key: _formKey,
+                // key: _formKey,
                 child: Column(
                   children: [
                     TextFormField(
@@ -291,7 +291,7 @@ class _RegisterpageState extends State<Registerpage> {
                 height: 35.0,
                 child: OutlinedButton.icon(
                   onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
+                    // if (_formKey.currentState!.validate()) {
                       try {
                         /////test regApi ////
                         final registerAuth = await registerDataFromApi();
@@ -324,11 +324,13 @@ class _RegisterpageState extends State<Registerpage> {
                           print('lloll');
 
                           setCookie('accesstoken', response.data['access_token']);
+                          setCookie('username', username.toString());
                               
                               setCookie('id', registerAuth.toString());
                       
                         final id = getCookie('id');
                           final cookie = getCookie('accesstoken');
+                          final usercookie = getCookie('username');
                           // dio.options.headers['Authorization'] =
                           //     'Bearer $registerAuth';
 
@@ -411,7 +413,7 @@ class _RegisterpageState extends State<Registerpage> {
                       //     return Loginpage();
                       //   }));
                       // }
-                    }
+                    // }
                   },
                   icon: Icon(Icons.login, color: Colors.white),
                   label: Text('Sign in', style: TextStyle(color: Colors.white)),
