@@ -59,7 +59,7 @@ final _textEditingController = TextEditingController();
 void CreateTweet(String content) async {
 
    final cookiee = getCookie('acessToken');
-   final userid = getCookie('id');
+   final userid = getCookie('userid');
     print('userid: ${userid}');
     print('cookiee: ${cookiee}');
     String? access_token = cookiee;

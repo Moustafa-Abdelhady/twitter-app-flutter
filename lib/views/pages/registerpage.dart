@@ -326,9 +326,9 @@ class _RegisterpageState extends State<Registerpage> {
                           setCookie('accesstoken', response.data['access_token']);
                           setCookie('username', username.toString());
                               
-                              setCookie('id', registerAuth.toString());
+                              // setCookie('id', registerAuth.toString());
                       
-                        final id = getCookie('id');
+                        // final id = getCookie('id');
                           final cookie = getCookie('accesstoken');
                           final usercookie = getCookie('username');
                           // dio.options.headers['Authorization'] =
@@ -348,7 +348,7 @@ class _RegisterpageState extends State<Registerpage> {
                           //     }))
                           //     );
                           // print('response: ${response.data}');
-                          print(id);
+                          // print(id);
                           print('lolll');
 
                           ScaffoldMessenger.of(context).showSnackBar(

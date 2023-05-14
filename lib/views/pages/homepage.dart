@@ -22,6 +22,10 @@ class Homepage extends StatefulWidget {
   _HomepageState createState() => _HomepageState();
 }
 
+void setCookie(String key, String value) {
+  html.document.cookie = '$key=$value; path=/';
+}
+
 String? getCookie(String key) {
   final cookies = html.document.cookie!.split(';');
   for (var cookie in cookies) {
@@ -55,8 +59,10 @@ class _HomepageState extends State<Homepage> {
   bool loaded = false;
   bool ischangecolor = false;
 
+  
+   
   final cookie = getCookie('acessToken');
-  final id = getCookie('id');
+  // final id = getCookie('userid');
   final username = getCookie('username');
 
   @override
@@ -67,6 +73,7 @@ class _HomepageState extends State<Homepage> {
     getUserData();
     getAllPostsData();
     loaded = false;
+    
   }
 
   Future<dynamic> getAllPostsData() async {
@@ -118,92 +125,96 @@ class _HomepageState extends State<Homepage> {
                             children: [
                               // for (int i = 0; i < _user.length; i)
 
-                               (_user != null)?
-                              UserAccountsDrawerHeader(
-                                currentAccountPictureSize: Size.fromRadius(30),
-                                decoration: BoxDecoration(color: Colors.white),
-                                currentAccountPicture: (_user?.profile?.image !=
-                                        null)
-                                    ? ClipOval(
-                                        child: CachedNetworkImage(
-                                          imageUrl:
-                                              'http://localhost:8000/api${_user?.profile?.image}',
-                                          placeholder: (context, url) =>
-                                              CircularProgressIndicator(),
-                                          errorWidget: (context, url, error) =>
-                                              Icon(Icons.error),
-                                          fit: BoxFit.cover,
-                                          width: 100,
-                                          height: 100,
-                                        ),
-                                      )
-                                    : CircleAvatar(
-                                        child: Icon(Icons.person),
-                                        radius: 50,
-                                      ),
+                              (_user != null)
+                                  ? UserAccountsDrawerHeader(
+                                      currentAccountPictureSize:
+                                          Size.fromRadius(30),
+                                      decoration:
+                                          BoxDecoration(color: Colors.white),
+                                      currentAccountPicture:
+                                          (_user?.profile?.image != null)
+                                              ? ClipOval(
+                                                  child: CachedNetworkImage(
+                                                    imageUrl:
+                                                        'http://localhost:8000/api${_user?.profile?.image}',
+                                                    placeholder: (context,
+                                                            url) =>
+                                                        CircularProgressIndicator(),
+                                                    errorWidget:
+                                                        (context, url, error) =>
+                                                            Icon(Icons.error),
+                                                    fit: BoxFit.cover,
+                                                    width: 100,
+                                                    height: 100,
+                                                  ),
+                                                )
+                                              : CircleAvatar(
+                                                  child: Icon(Icons.person),
+                                                  radius: 50,
+                                                ),
 
-                                //  (_user!.fullname != null)?
-                                accountName: Text(
-                                  '${_user!.fullname}',
-                                  // 'oo',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                // : Text('mostafa'),
-                                accountEmail: Text(
-                                  '${_user!.username}',
-                                  // 'al',
-                                  style: TextStyle(
-                                    color: Color.fromARGB(255, 143, 141, 141),
-                                  ),
-                                ),
-                              )
-                              :Text('null'),
+                                      //  (_user!.fullname != null)?
+                                      accountName: Text(
+                                        '${_user!.fullname}',
+                                        // 'oo',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      // : Text('mostafa'),
+                                      accountEmail: Text(
+                                        '@${_user!.username}',
+                                        // 'al',
+                                        style: TextStyle(
+                                          color: Color.fromARGB(
+                                              255, 143, 141, 141),
+                                        ),
+                                      ),
+                                    )
+                                  : Text('null'),
                               Padding(
                                   padding: const EdgeInsets.only(
                                       right: 15, left: 15),
-                                  child: 
-                                          
-                                      Row(
-                                          children: [
-                                            (_user?.following?.length != null)
-                                            ?Text(
+                                  child: Row(
+                                    children: [
+                                      (_user?.following?.length != null)
+                                          ? Text(
                                               '${_user?.following?.length}',
                                               // '0',
                                               style: TextStyle(
                                                   color: Colors.black,
                                                   fontWeight: FontWeight.bold),
-                                            ): Text('0 '),
-                                           Text(
-                                              'Following',
-                                              style: TextStyle(
-                                                  color: Color.fromARGB(
-                                                      255, 143, 141, 141),
-                                                  fontSize: 13),
-                                            ),
-                                            SizedBox(
-                                              width: 20,
-                                            ),
-                                             (_user?.followers?.length != null)
-                                                ?Text(
+                                            )
+                                          : Text('0 '),
+                                      Text(
+                                        'Following',
+                                        style: TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 143, 141, 141),
+                                            fontSize: 13),
+                                      ),
+                                      SizedBox(
+                                        width: 20,
+                                      ),
+                                      (_user?.followers?.length != null)
+                                          ? Text(
                                               '${_user?.followers?.length}',
                                               style: TextStyle(
                                                   color: Colors.black,
                                                   fontWeight: FontWeight.bold),
-                                            ): Text(' 0 '),
-                                            Text(
-                                              'Followers',
-                                              style: TextStyle(
-                                                  color: Color.fromARGB(
-                                                      255, 143, 141, 141),
-                                                  fontSize: 13),
                                             )
-                                          ],
-                                        )
-                                      ),
+                                          : Text(' 0 '),
+                                      Text(
+                                        'Followers',
+                                        style: TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 143, 141, 141),
+                                            fontSize: 13),
+                                      )
+                                    ],
+                                  )),
                               ListTile(
                                 leading: Icon(
                                   Icons.person,
@@ -267,6 +278,9 @@ class _HomepageState extends State<Homepage> {
                 )),
             floatingActionButton: FloatingActionButton(
               onPressed: () {
+                 setCookie('userid',_user!.id.toString());
+                 final id = getCookie('userid');
+                  print('iid :$id'); 
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => NewTweet()));
               },
@@ -296,7 +310,7 @@ class _HomepageState extends State<Homepage> {
                                     child: (_user?.profile?.image != null)
                                         ? CircleAvatar(
                                             radius: 20,
-                                            backgroundImage:NetworkImage(
+                                            backgroundImage: NetworkImage(
                                                 'http://localhost:8000/api${_user?.profile?.image}'),
                                           )
                                         : CircleAvatar(
@@ -323,9 +337,9 @@ class _HomepageState extends State<Homepage> {
 
                                     print(cookie);
                                     print('lool');
-                                    print('iid :$id');
+                                    // print('iid :$id');
                                     deleteCookie('acessToken');
-                                    deleteCookie('id');
+                                    deleteCookie('userid');
                                     deleteCookie('username');
 
                                     print('loool');
