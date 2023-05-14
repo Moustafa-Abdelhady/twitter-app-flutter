@@ -45,8 +45,10 @@ class _HomepageState extends State<Homepage> {
 
   //users
   final UserService _userService = UserService();
- UserModel? _user ;
-  
+  UserModel? _user;
+  // Map<String, dynamic> ?_user;
+  //  List<UserModel> _user = [];
+
   // final Map<String, dynamic> _user;
 
   // late Future<List<PostModel>> _postList;
@@ -55,9 +57,21 @@ class _HomepageState extends State<Homepage> {
 
   final cookie = getCookie('acessToken');
   final id = getCookie('id');
+  final username = getCookie('username');
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // _postList = PostService().postData();
+    getUserData();
+    getAllPostsData();
+    loaded = false;
+  }
 
   Future<dynamic> getAllPostsData() async {
     print('getAllPostsData Calld');
+
     final posts = await _postService.postData();
     print('posts count: ${posts.length}');
     if (posts.isNotEmpty) {
@@ -71,24 +85,15 @@ class _HomepageState extends State<Homepage> {
 
   Future<dynamic> getUserData() async {
     print('getUserData Calld');
-    final users = await _userService.userData();
-    print('users counter: ${users}');
-    
+
+    final UserModel? user = await UserService.userData();
+    print('users counter: ${user}');
+    if (user != null) {
       setState(() {
-        _user = users;
+        _user = user;
         print('oo${_user}');
       });
-   
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    // _postList = PostService().postData();
-    getUserData();
-    getAllPostsData();
-    loaded = false;
+    }
   }
 
   @override
@@ -100,143 +105,163 @@ class _HomepageState extends State<Homepage> {
                 backgroundColor: Colors.white,
                 child: Column(
                   children: [
-                    if (_user != null)
-                    // Expanded(
-                    // child:  ListView.separated(
+                    (_user != null)
+                        ?
+                        // Expanded(
+                        // child:  ListView.separated(
 
-                    // itemCount: _post.length,
-                    // itemBuilder: (context, index) {
-                    // final post = _post[index];
-                    // return
-                    Column(
-                      children: [
-                        // for (int i = 0; i < _user.length; i)
-                        
-                       (_user != null)?UserAccountsDrawerHeader (
-                          currentAccountPictureSize: Size.fromRadius(30),
-                          decoration: BoxDecoration(color: Colors.white),
-                          currentAccountPicture:(_user!.profile.image != null) ?ClipOval(
-                            child: CachedNetworkImage(
-                              imageUrl:
-                                  'http://localhost:8000/api${_user!.profile.image}'
-                                  // '1'
-                                  ,
-                              placeholder: (context, url) =>
-                                  CircularProgressIndicator(),
-                              errorWidget: (context, url, error) =>
-                                  Icon(Icons.error),
-                              fit: BoxFit.cover,
-                              width: 100,
-                              height: 100,
-                            ),
-                          ):Text('no image yet'),
-                          accountName: Text(
-                            '${_user!.fullname}',
-                            
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                          accountEmail: Text(
-                            '${_user!.username}',
-                          
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 143, 141, 141),
-                            ),
-                          ),
-                        ):Text('null'),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 15, left: 15),
-                          child:(_user!.following.length != null &&_user!.followers.length !=null )? Row(
-                            children:[
-                             
-                              Text(
-                                '${_user!.following.length}',
-                                // '0',
-                                style: TextStyle(
+                        // itemCount: _post.length,
+                        // itemBuilder: (context, index) {
+                        // final post = _post[index];
+                        // return
+                        Column(
+                            children: [
+                              // for (int i = 0; i < _user.length; i)
+
+                               (_user != null)?
+                              UserAccountsDrawerHeader(
+                                currentAccountPictureSize: Size.fromRadius(30),
+                                decoration: BoxDecoration(color: Colors.white),
+                                currentAccountPicture: (_user?.profile?.image !=
+                                        null)
+                                    ? ClipOval(
+                                        child: CachedNetworkImage(
+                                          imageUrl:
+                                              'http://localhost:8000/api${_user?.profile?.image}',
+                                          placeholder: (context, url) =>
+                                              CircularProgressIndicator(),
+                                          errorWidget: (context, url, error) =>
+                                              Icon(Icons.error),
+                                          fit: BoxFit.cover,
+                                          width: 100,
+                                          height: 100,
+                                        ),
+                                      )
+                                    : CircleAvatar(
+                                        child: Icon(Icons.person),
+                                        radius: 50,
+                                      ),
+
+                                //  (_user!.fullname != null)?
+                                accountName: Text(
+                                  '${_user!.fullname}',
+                                  // 'oo',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
                                     color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                'Following',
-                                style: TextStyle(
+                                  ),
+                                ),
+                                // : Text('mostafa'),
+                                accountEmail: Text(
+                                  '${_user!.username}',
+                                  // 'al',
+                                  style: TextStyle(
                                     color: Color.fromARGB(255, 143, 141, 141),
-                                    fontSize: 13),
-                              ),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              Text(
-                                '${_user!.followers.length}',
-                                // '0',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                'Followers',
-                                style: TextStyle(
-                                    color: Color.fromARGB(255, 143, 141, 141),
-                                    fontSize: 13),
+                                  ),
+                                ),
                               )
+                              :Text('null'),
+                              Padding(
+                                  padding: const EdgeInsets.only(
+                                      right: 15, left: 15),
+                                  child: 
+                                          
+                                      Row(
+                                          children: [
+                                            (_user?.following?.length != null)
+                                            ?Text(
+                                              '${_user?.following?.length}',
+                                              // '0',
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold),
+                                            ): Text('0 '),
+                                           Text(
+                                              'Following',
+                                              style: TextStyle(
+                                                  color: Color.fromARGB(
+                                                      255, 143, 141, 141),
+                                                  fontSize: 13),
+                                            ),
+                                            SizedBox(
+                                              width: 20,
+                                            ),
+                                             (_user?.followers?.length != null)
+                                                ?Text(
+                                              '${_user?.followers?.length}',
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold),
+                                            ): Text(' 0 '),
+                                            Text(
+                                              'Followers',
+                                              style: TextStyle(
+                                                  color: Color.fromARGB(
+                                                      255, 143, 141, 141),
+                                                  fontSize: 13),
+                                            )
+                                          ],
+                                        )
+                                      ),
+                              ListTile(
+                                leading: Icon(
+                                  Icons.person,
+                                  color: Colors.black,
+                                ),
+                                title: Text('Profile',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600)),
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Profilepage()));
+                                },
+                              ),
+                              ListTile(
+                                leading: Icon(
+                                  Icons.line_style_outlined,
+                                  color: Colors.black,
+                                ),
+                                title: Text(
+                                  'Topics',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                onTap: () {},
+                              ),
+                              ListTile(
+                                leading: Icon(
+                                  Icons.list_alt_sharp,
+                                  color: Colors.black,
+                                ),
+                                title: Text(
+                                  'List',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                onTap: () {},
+                              ),
+                              ListTile(
+                                leading: Icon(
+                                  Icons.bookmark,
+                                  color: Colors.black,
+                                ),
+                                title: Text(
+                                  'Bookmark',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                onTap: () {},
+                              ),
                             ],
-                          ):Text('0 Following & Followers')
-                        ),
-                        ListTile(
-                          leading: Icon(
-                            Icons.person,
-                            color: Colors.black,
-                          ),
-                          title: Text('Profile',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w600)),
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Profilepage()));
-                          },
-                        ),
-                        ListTile(
-                          leading: Icon(
-                            Icons.line_style_outlined,
-                            color: Colors.black,
-                          ),
-                          title: Text(
-                            'Topics',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600),
-                          ),
-                          onTap: () {},
-                        ),
-                        ListTile(
-                          leading: Icon(
-                            Icons.list_alt_sharp,
-                            color: Colors.black,
-                          ),
-                          title: Text(
-                            'List',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600),
-                          ),
-                          onTap: () {},
-                        ),
-                        ListTile(
-                          leading: Icon(
-                            Icons.bookmark,
-                            color: Colors.black,
-                          ),
-                          title: Text(
-                            'Bookmark',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600),
-                          ),
-                          onTap: () {},
-                        ),
-                      ],
-                    ),
+                          )
+                        : Center(child: CircularProgressIndicator())
                     // }))
                   ],
                 )),
@@ -268,11 +293,19 @@ class _HomepageState extends State<Homepage> {
                                     onTap: () {
                                       Scaffold.of(context).openDrawer();
                                     },
-                                    child: const CircleAvatar(
-                                      radius: 20,
-                                      backgroundImage:
-                                          AssetImage('assets/imgflo.jpg'),
-                                    ),
+                                    child: (_user?.profile?.image != null)
+                                        ? CircleAvatar(
+                                            radius: 20,
+                                            backgroundImage:NetworkImage(
+                                                'http://localhost:8000/api${_user?.profile?.image}'),
+                                          )
+                                        : CircleAvatar(
+                                            child: Icon(Icons.person),
+                                            backgroundColor: Colors.blue,
+                                            //  borderColor: Colors.white,
+                                            //   borderWidth: 2,
+                                            radius: 20,
+                                          ),
                                   );
                                 }),
                                 Container(
@@ -293,6 +326,7 @@ class _HomepageState extends State<Homepage> {
                                     print('iid :$id');
                                     deleteCookie('acessToken');
                                     deleteCookie('id');
+                                    deleteCookie('username');
 
                                     print('loool');
                                     Navigator.of(context).push(
@@ -338,248 +372,7 @@ class _HomepageState extends State<Homepage> {
                                       height:
                                           MediaQuery.of(context).size.height *
                                               0.6,
-                                      child: PostBodyBuilder(i)
-                                      // child: Card(
-                                      //   // shape: RoundedRectangleBorder(
-                                      //   //   borderRadius:
-                                      //   //       BorderRadius.circular(5.0),
-                                      //   //   side: BorderSide(
-                                      //   //       color: Colors.grey.shade300),
-                                      //   // ),
-                                      //   // margin: EdgeInsets.symmetric(
-                                      //   //     vertical: 1.0, horizontal: 0.0),
-                                      //   child: InkWell(
-                                      //     onTap: () {
-                                      //       // Navigator.push(
-                                      //       //   context,
-                                      //       //   MaterialPageRoute(
-                                      //       //     builder: (context) =>
-                                      //       //         PostDetailScreen(
-                                      //       //             post: post),
-                                      //       //   ),
-                                      //       // );
-                                      //     },
-                                      //     child: Padding(
-                                      //       padding: EdgeInsets.symmetric(
-                                      //           vertical: 20, horizontal: 40.0),
-                                      //       child: Column(
-                                      //         crossAxisAlignment:
-                                      //             CrossAxisAlignment.start,
-                                      //         children: [
-                                      //           // if (_post.length != null &&
-                                      //           //     _post.isNotEmpty)
-                                      //           Stack(
-                                      //             children: [
-                                      //               // if (_post.length != null && _post.isNotEmpty)
-
-                                      //               Row(
-                                      //                 children: [
-                                      //                   // for (int i =
-                                      //                   //         _post.length - 1;
-                                      //                   //     i < _post.length;
-                                      //                   //     i++)
-                                      //                   if (_post[i].user.image !=
-                                      //                       null)
-                                      //                     Positioned(
-                                      //                       top: 0,
-                                      //                       left: 0,
-                                      //                       child: ClipOval(
-                                      //                         child:
-                                      //                             CachedNetworkImage(
-                                      //                           imageUrl:
-                                      //                               'http://localhost:8000/api${_post[i].user.image}',
-                                      //                           placeholder: (context,
-                                      //                                   url) =>
-                                      //                               CircularProgressIndicator(),
-                                      //                           errorWidget: (context,
-                                      //                                   url,
-                                      //                                   error) =>
-                                      //                               Icon(Icons
-                                      //                                   .error),
-                                      //                           fit: BoxFit.cover,
-                                      //                           width: 70,
-                                      //                           height: 70,
-                                      //                         ),
-                                      //                       ),
-                                      //                     ),
-
-                                      //                   SizedBox(width: 25),
-                                      //                   Column(
-                                      //                     crossAxisAlignment:
-                                      //                         CrossAxisAlignment
-                                      //                             .start,
-                                      //                     children: [
-                                      //                       // for (int i = 0; i > _post.length;  i++)
-                                      //                       Text(
-                                      //                         '${_post[0].user.fullname}',
-                                      //                         style: TextStyle(
-                                      //                             fontWeight:
-                                      //                                 FontWeight
-                                      //                                     .bold,
-                                      //                             fontSize: 16),
-                                      //                       ),
-                                      //                       SizedBox(height: 8),
-                                      //                       Text(
-                                      //                         '@${_post[0].user.username}',
-                                      //                         style: TextStyle(
-                                      //                           fontSize: 13,
-                                      //                           color: Colors
-                                      //                               .blueGrey,
-                                      //                         ),
-                                      //                       ),
-                                      //                       SizedBox(height: 8),
-                                      //                       Text(
-                                      //                         'Posted on ${(_post[i].createAt)}',
-                                      //                         style: TextStyle(
-                                      //                           fontSize: 12,
-                                      //                           color:
-                                      //                               Colors.grey,
-                                      //                         ),
-                                      //                       ),
-                                      //                     ],
-                                      //                   ),
-                                      //                 ],
-                                      //               ),
-                                      //               SizedBox(height: 15),
-                                      //               Padding(
-                                      //                 padding:
-                                      //                     // (_post[i].media.length >0) ?
-                                      //                     EdgeInsets.only(
-                                      //                         top: 100),
-                                      //                 //: EdgeInsets.only(
-                                      //                 // top: 130),
-                                      //                 child: Row(
-                                      //                   crossAxisAlignment:
-                                      //                       CrossAxisAlignment
-                                      //                           .start,
-                                      //                   children: [
-                                      //                     Text(
-                                      //                       _post[i].content,
-                                      //                       style: TextStyle(
-                                      //                         fontSize: 20,
-                                      //                         fontWeight:
-                                      //                             FontWeight.bold,
-                                      //                       ),
-                                      //                     ),
-                                      //                   ],
-                                      //                 ),
-                                      //               ),
-                                      //             ],
-                                      //           ),
-                                      //           SizedBox(height: 7),
-                                      //           // Center(
-                                      //           //     child:
-                                      //           //         //  (_post[i].media.length >0) ?
-                                      //           //         AspectRatio(
-                                      //           //   aspectRatio: 18 / 7,
-                                      //           //   child: ListView.builder(
-                                      //           //     itemCount: _post.length,
-                                      //           //     // _post[i].media.length,
-                                      //           //     itemBuilder:
-                                      //           //         (context, index) {
-                                      //           //       return ListTile(
-                                      //           //           title: Center(
-                                      //           //         child: ClipRRect(
-                                      //           //           borderRadius:
-                                      //           //               BorderRadius
-                                      //           //                   .circular(5.0),
-                                      //           //           child: AspectRatio(
-                                      //           //               aspectRatio:
-                                      //           //                   20 / 10,
-                                      //           //               // if (post.user.image != null)
-                                      //           //               child:
-                                      //           //                   CachedNetworkImage(
-                                      //           //                 imageUrl:
-                                      //           //                     'http://localhost:8000/api${_post[i].media[index]['file']}',
-                                      //           //                 placeholder: (context,
-                                      //           //                         url) =>
-                                      //           //                     CircularProgressIndicator(),
-                                      //           //                 errorWidget: (context,
-                                      //           //                         url,
-                                      //           //                         error) =>
-                                      //           //                     Icon(Icons
-                                      //           //                         .error),
-                                      //           //                 fit: BoxFit.cover,
-                                      //           //                 width: 300,
-                                      //           //                 height: 300,
-                                      //           //               )),
-                                      //           //         ),
-                                      //           //       ));
-                                      //           //     },
-                                      //           //   ),
-                                      //           // )
-                                      //           //     // :SizedBox(height:140)
-                                      //           //     ),
-                                      //           SizedBox(height: 15),
-                                      //           // Expanded(
-                                      //           //   child: Row(
-                                      //           //     mainAxisAlignment:
-                                      //           //         MainAxisAlignment.center,
-                                      //           //     children: [
-                                      //           //       InkWell(
-                                      //           //           onTap: () {
-                                      //           //             setState(() {
-                                      //           //               ischangecolor =
-                                      //           //                   !ischangecolor;
-                                      //           //             });
-                                      //           //           },
-                                      //           //           child: Icon(
-                                      //           //               Icons.favorite,
-                                      //           //               color: ischangecolor
-                                      //           //                   ? Colors.grey
-                                      //           //                   : Colors.red)),
-                                      //           //       SizedBox(width: 8),
-                                      //           //       // for (int i = 0;
-                                      //           //       //     i > _post.length;
-                                      //           //       //     i++)
-                                      //           //       Text(
-                                      //           //           '${ischangecolor ? _post[i].likes.count++ : _post[i].likes.count--}'),
-                                      //           //       SizedBox(width: 25),
-                                      //           //       InkWell(
-                                      //           //           onTap: () {
-                                      //           //             // setState(() {
-                                      //           //             //   ischangecolor =
-                                      //           //             //       !ischangecolor;
-                                      //           //             // });
-                                      //           //           },
-                                      //           //           child: Icon(
-                                      //           //               Icons.comment,
-                                      //           //               color:
-                                      //           //                   Colors.blue)),
-                                      //           //       SizedBox(width: 8),
-                                      //           //       // for (int i = 0;
-                                      //           //       //     i > _post.length;
-                                      //           //       //     i++)
-                                      //           //       Text(
-                                      //           //           '${_post[i].comments.count}'),
-                                      //           //       SizedBox(width: 25),
-                                      //           //       InkWell(
-                                      //           //           onTap: () {
-                                      //           //             //  setState(() {
-                                      //           //             // ischangecolor = !ischangecolor;
-                                      //           //             // });
-                                      //           //           },
-                                      //           //           child: Icon(Icons.reply,
-                                      //           //               color:
-                                      //           //                   Colors.green)),
-                                      //           //       SizedBox(width: 8),
-                                      //           //       // for (int i = 0;
-                                      //           //       //     i > _post.length;
-                                      //           //       //     i++)
-                                      //           //       Text(
-                                      //           //           '${_post[i].replies.count}'),
-                                      //           //     ],
-                                      //           //   ),
-                                      //           // ),
-                                      //         ],
-                                      //       ),
-                                      //     ),
-                                      //   ),
-                                      // ),
-                                      ),
-                                // },
-                                // ),
-                                // ),
+                                      child: PostBodyBuilder(i)),
                               ],
                             ),
                           ],
@@ -656,13 +449,13 @@ class _HomepageState extends State<Homepage> {
                           children: [
                             // for (int i = 0; i > _post.length;  i++)
                             Text(
-                              '${_post[0].user.fullname}',
+                              '${_post[i].user.fullname}',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                             SizedBox(height: 8),
                             Text(
-                              '@${_post[0].user.username}',
+                              '@${_post[i].user.username}',
                               style: TextStyle(
                                 fontSize: 13,
                                 color: Colors.blueGrey,

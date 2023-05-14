@@ -22,8 +22,15 @@ class _ProfilepageState extends State<Profilepage> {
   List<PostModel> _post = [];
   // late Future<List<PostModel>> _postList;
   bool ischangecolor = false;
- 
+  
+  @override
+void initState() {
+    // TODO: implement initState
+    super.initState();
+    // _postList = PostService().postData();
 
+    getPostsData();
+  }
   Future<dynamic> getPostsData() async {
     // final postService = PostService();
     final posts = await _postService.postData();

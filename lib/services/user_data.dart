@@ -17,43 +17,43 @@ String? getCookie(String key) {
 }
 
 class UserService {
-  Future<UserModel?> userData() async {
+  UserModel? user;
+  // Map<String,dynamic>? user;
+  // final dio = Dio();
+  //add static try
+  static final Dio _dio = Dio();
+  static Future<UserModel?> userData() async {
     final cookie = getCookie('acessToken');
     final usercookie = getCookie('username');
     String? token = cookie;
     String? username = usercookie;
     print('UU${username}');
+    print('token $token');
 
-    UserModel? user;
+    final response = await _dio.get('${Url}${username}',
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+        }),
+        queryParameters: ({
+          'access_token': token,
+          'client_id': 'pYCSiQllhFFivVInLE7Y4DHEdYSqkGgG3jJMxcQd'
+        }));
+    print('UserData ${response.data}');
+    if (response.statusCode == 200 && response.data != Null) {
+      print('good o');
+      // response.data.forEach((ele) {/
+      // UserModel users = UserModel.fromJson((ele));
+      // user!.add(users);
+      // });
 
-    final dio = Dio();
+      UserModel? users = UserModel.fromJson(response.data);
+      print('UserModel $users');
+      return users;
+      // final UserModel? user = UserModel.fromJson(jsonDecode(response.data));
 
-    try {
-      final response = await dio.get('${Url}${username}',
-          options: Options(headers: {
-            'Content-Type': 'application/json',
-          }),
-          queryParameters: ({
-            'access_token': token,
-            'client_id': 'pYCSiQllhFFivVInLE7Y4DHEdYSqkGgG3jJMxcQd'
-          }));
-      print('UserData ${response.data}');
-      if (response.statusCode == 200 && response.data != 0) {
-        print('good o');
-
-        // user = UserModel.fromJson(response.data);
-
-        print('users $user');
-         return response.data;
-      }
-    } catch (e, stackTrace) {
-      if (e is RangeError) {
-        print('RangeError');
-      } else {
-        print(e);
-      }
+      // return user;
+    } else {
+      throw Exception('Failed to fetch data');
     }
-
-   
   }
 }
