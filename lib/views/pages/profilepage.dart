@@ -64,31 +64,8 @@ class _ProfilepageState extends State<Profilepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title:
-      // ),
-      body: // Column(
-          // children: [
-          // Column(
-          //   children: [coverimage(),profile()],
-          // ),
-          //  SizedBox(
-          //                           height:150,
-          //                               // MediaQuery.of(context).size.height *
-          //                               //     0.3,
-          //                           child: (coverimage())),
-
-          //                            SizedBox(
-          //                           height:300,
-          //                               // MediaQuery.of(context).size.height *
-          //                               //     0.6,
-          //                           child: (profile())),
-          // ListView(
-          //     physics: const BouncingScrollPhysics(
-          //         parent: AlwaysScrollableScrollPhysics()),
-          //     children: [coverimage(),profile()],
-          //   ),
-
+    
+      body:
           Column(
         children: [
           SingleChildScrollView(

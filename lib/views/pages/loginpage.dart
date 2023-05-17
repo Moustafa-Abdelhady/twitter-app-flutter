@@ -8,6 +8,8 @@ import 'dart:html' as html;
 // import 'package:universal_html/html.dart' ;
 import '../../models/apiModel.dart';
 import '../../services/api_data.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Loginpage extends StatefulWidget {
   const Loginpage({Key? key, this.title}) : super(key: key);
@@ -23,6 +25,28 @@ class _LoginpageState extends State<Loginpage> {
   final TextEditingController password = TextEditingController();
   // GlobalKey<FormState> scaffoldKey = GlobalKey<FormState>();
   // GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  ///google authantication
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  Future<String?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount!.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+      await _auth.signInWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
+      throw e;
+    }
+  }
+
   void setCookie(String key, String value) {
     html.document.cookie = '$key=$value; path=/';
   }
@@ -86,8 +110,19 @@ class _LoginpageState extends State<Loginpage> {
                 width: double.infinity,
                 height: 40.0,
                 child: OutlinedButton.icon(
-                  onPressed: () {
+                  onPressed: () async {
                     // Handle sign in with Google logic here
+                
+                    print('Sign in with Google clicked');
+                    try {
+                  await signInWithGoogle();
+                  Navigator.push(
+                   context,
+                    MaterialPageRoute(builder: (context) => Splashpage()),
+                 );
+                } catch (e) {
+                print('Failed to sign in with Google: $e');
+                     } 
                   },
                   icon: Image.asset(
                     'assets/google.png',
@@ -144,8 +179,7 @@ class _LoginpageState extends State<Loginpage> {
                           return 'Please enter Mail example@email.com ';
                         }
                         // Regular expression to validate date in format 'dd/MM/yyyy'
-                        final mailRegex =
-                            RegExp(r'^[a-zA-Z0-9_-]+$');
+                        final mailRegex = RegExp(r'^[a-zA-Z0-9_-]+$');
                         if (!mailRegex.hasMatch(value)) {
                           return 'Please enter a valid username';
                         }
@@ -155,14 +189,14 @@ class _LoginpageState extends State<Loginpage> {
                         labelText: 'username',
                         hintText: 'Enter username',
                         border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10.0),
-    ),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
                       ),
                     ),
                     // ),
                     SizedBox(height: 9.0),
-                      // Padding(
-                      //      padding: EdgeInsets.symmetric(horizontal: 14.0),
+                    // Padding(
+                    //      padding: EdgeInsets.symmetric(horizontal: 14.0),
                     TextFormField(
                       controller: password,
                       obscureText: true,
@@ -178,8 +212,8 @@ class _LoginpageState extends State<Loginpage> {
                         labelText: 'Password',
                         hintText: 'Enter Password',
                         border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10.0),
-    ),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
                       ),
                     ),
                     // )
@@ -194,74 +228,72 @@ class _LoginpageState extends State<Loginpage> {
                     //  String email = username.text;
                     //  String password = password.text;
                     // if (_formKey.currentState!.validate()) {
-                      /////test Api////
-                      final authData = await getDataFromApi();
-                      final dio = Dio();
+                    /////test Api////
+                    final authData = await getDataFromApi();
+                    final dio = Dio();
 
-                      print('authData : $authData');
-                      if (authData != null) {
-                        print('lol');
-                        dio.options.headers['Authorization'] =
-                            'Bearer $authData';
-                        print('lolll');
+                    print('authData : $authData');
+                    if (authData != null) {
+                      print('lol');
+                      dio.options.headers['Authorization'] = 'Bearer $authData';
+                      print('lolll');
 
-                        final response =
-                            await dio.post('http://localhost:8000/auth/token',
-                                options: Options(
-                                  contentType: 'application/json',
-                                ),
-                                data: ({
-                                  'client_id':
-                                      'pYCSiQllhFFivVInLE7Y4DHEdYSqkGgG3jJMxcQd',
-                                  'client_secret':
-                                      'kn6C0iAr4MDmBIkX7xJLI3NCILmM6aRsiHV6biK6tgTSVeVbgFa9ZoFC5wzmJ1GzdkyD8XZ0kZj1C9Mw4JPMBEervL2iaDR7sq9X05ifFI6zymX5H8yKh1OmP6LE04TU',
-                                  'grant_type': 'password',
-                                  'username': username.text,
-                                  'password': password.text,
-                                }));
-                        //  final username = response.data['username'];
-                        // final password = response.data['password'];
-                        print(response.data);
-                        print('lllolllllll');
-                        ////// set access token to cookies here
-                        //  final registerAuth = await registerDataFromApi();
-                        //  print('registerAuthLogin : ${registerAuth}');
-                        setCookie('acessToken', response.data['access_token']);
-                        setCookie('username', username.text);
-                        
-                        final cookie = getCookie('acessToken');
-                        final usercookie = getCookie('username');
-                       
+                      final response =
+                          await dio.post('http://localhost:8000/auth/token',
+                              options: Options(
+                                contentType: 'application/json',
+                              ),
+                              data: ({
+                                'client_id':
+                                    'pYCSiQllhFFivVInLE7Y4DHEdYSqkGgG3jJMxcQd',
+                                'client_secret':
+                                    'kn6C0iAr4MDmBIkX7xJLI3NCILmM6aRsiHV6biK6tgTSVeVbgFa9ZoFC5wzmJ1GzdkyD8XZ0kZj1C9Mw4JPMBEervL2iaDR7sq9X05ifFI6zymX5H8yKh1OmP6LE04TU',
+                                'grant_type': 'password',
+                                'username': username.text,
+                                'password': password.text,
+                              }));
+                      //  final username = response.data['username'];
+                      // final password = response.data['password'];
+                      print(response.data);
+                      print('lllolllllll');
+                      ////// set access token to cookies here
+                      //  final registerAuth = await registerDataFromApi();
+                      //  print('registerAuthLogin : ${registerAuth}');
+                      setCookie('acessToken', response.data['access_token']);
+                      setCookie('username', username.text);
 
-                        print(cookie);
-                        print(usercookie);
-                       
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Row(
-                                  mainAxisAlignment: MainAxisAlignment
-                                      .center, // Center the content
-                                  children: [
-                                Icon(Icons.circle_outlined),
-                                SizedBox(width: 8),
-                                Text('Loading'),
-                              ])),
-                        );
+                      final cookie = getCookie('acessToken');
+                      final usercookie = getCookie('username');
 
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) {
-                            return Splashpage();
-                          }),
-                        );
+                      print(cookie);
+                      print(usercookie);
 
-                        if (response.statusCode == 200) {
-                          final responseData = response.data;
-                          print('Response data: $responseData');
-                        } else {
-                          print(
-                              'Request failed with status: ${response.statusCode}.');
-                        }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Row(
+                                mainAxisAlignment: MainAxisAlignment
+                                    .center, // Center the content
+                                children: [
+                              Icon(Icons.circle_outlined),
+                              SizedBox(width: 8),
+                              Text('Loading'),
+                            ])),
+                      );
+
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) {
+                          return Splashpage();
+                        }),
+                      );
+
+                      if (response.statusCode == 200) {
+                        final responseData = response.data;
+                        print('Response data: $responseData');
+                      } else {
+                        print(
+                            'Request failed with status: ${response.statusCode}.');
                       }
+                    }
                     // }
                     // Handle login logic here
                     // String email = username.text;
@@ -321,5 +353,4 @@ class _LoginpageState extends State<Loginpage> {
       ),
     );
   }
-  
 }
