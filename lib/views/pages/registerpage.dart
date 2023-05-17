@@ -25,8 +25,8 @@ class _RegisterpageState extends State<Registerpage> {
   final TextEditingController _username = TextEditingController();
   final TextEditingController _birthdate = TextEditingController();
   final TextEditingController _password = TextEditingController();
-  // GlobalKey<FormState> scaffoldKey = GlobalKey<FormState>();
-//  GlobalKey<FormState>  _formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> scaffoldKey = GlobalKey<FormState>();
+ GlobalKey<FormState>  _formKey = GlobalKey<FormState>();
 
 ////test api////
   RegisterData registerAuthService = RegisterData();
@@ -64,7 +64,7 @@ class _RegisterpageState extends State<Registerpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // key: scaffoldKey,
+      key: scaffoldKey,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 11.0),
@@ -108,30 +108,30 @@ class _RegisterpageState extends State<Registerpage> {
                 ),
               ),
               SizedBox(height: 9.0),
-              Container(
-                width: double.infinity,
-                height: 35.0,
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    // Handle sign in with Github logic here
-                  },
-                  icon: Image.asset(
-                    'assets/GitHub-Mark.png',
-                    height: 20,
-                    width: 20,
-                  ),
-                  label: Text('Sign up with Github'),
-                  style: ButtonStyle(
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                            13.0), // Specify desired radius
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 9.0),
+              // Container(
+              //   width: double.infinity,
+              //   height: 35.0,
+              //   child: OutlinedButton.icon(
+              //     onPressed: () {
+              //       // Handle sign in with Github logic here
+              //     },
+              //     icon: Image.asset(
+              //       'assets/GitHub-Mark.png',
+              //       height: 20,
+              //       width: 20,
+              //     ),
+              //     label: Text('Sign up with Github'),
+              //     style: ButtonStyle(
+              //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              //         RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(
+              //               13.0), // Specify desired radius
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // SizedBox(height: 9.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -145,7 +145,7 @@ class _RegisterpageState extends State<Registerpage> {
               ),
               SizedBox(height: 3.0),
               Form(
-                // key: _formKey,
+                key: _formKey,
                 child: Column(
                   children: [
                     TextFormField(
@@ -291,7 +291,7 @@ class _RegisterpageState extends State<Registerpage> {
                 height: 35.0,
                 child: OutlinedButton.icon(
                   onPressed: () async {
-                    // if (_formKey.currentState!.validate()) {
+                    if (_formKey.currentState!.validate()) {
                       try {
                         /////test regApi ////
                         final registerAuth = await registerDataFromApi();
@@ -326,9 +326,9 @@ class _RegisterpageState extends State<Registerpage> {
                           setCookie('accesstoken', response.data['access_token']);
                           setCookie('username', username.toString());
                               
-                              // setCookie('id', registerAuth.toString());
+                              setCookie('id', registerAuth.toString());
                       
-                        // final id = getCookie('id');
+                        final id = getCookie('id');
                           final cookie = getCookie('accesstoken');
                           final usercookie = getCookie('username');
                           // dio.options.headers['Authorization'] =
@@ -413,7 +413,7 @@ class _RegisterpageState extends State<Registerpage> {
                       //     return Loginpage();
                       //   }));
                       // }
-                    // }
+                    }
                   },
                   icon: Icon(Icons.login, color: Colors.white),
                   label: Text('Sign in', style: TextStyle(color: Colors.white)),

@@ -36,6 +36,7 @@ class _SearchpageState extends State<Searchpage> {
 
   final UserService _userService = UserService();
   UserModel? _user;
+  UserModel? userI;
   static final Dio _dio = Dio();
 
   @override
@@ -43,6 +44,7 @@ class _SearchpageState extends State<Searchpage> {
     // TODO: implement initState
     super.initState();
     getFollowingsData();
+    getUserData();
     // _postList = PostService().postData();
     // getSearchData();
   }
@@ -55,6 +57,19 @@ class _SearchpageState extends State<Searchpage> {
     print('##${_searchController.text}');
 
     super.dispose();
+  }
+
+  Future<dynamic> getUserData() async {
+    print('getUserData Calld');
+
+    final UserModel? user = await UserService.userData();
+    print('users counter: ${user}');
+    if (user != null) {
+      setState(() {
+        userI = user;
+        print('oo${userI}');
+      });
+    }
   }
 
   Future<dynamic> getFollowingsData() async {
@@ -117,10 +132,14 @@ class _SearchpageState extends State<Searchpage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const CircleAvatar(
+                           (userI?.profile?.image != null)?
+                            CircleAvatar(
                             radius: 20,
-                            backgroundImage: AssetImage('assets/imgflo.jpg'),
-                          ),
+                            backgroundImage: NetworkImage('http://localhost:8000/api${userI?.profile?.image}'),
+                          ) : CircleAvatar(
+                                                  child: Icon(Icons.person),
+                                                  // radius: 50,
+                                                ),
                           SizedBox(
                             height: 40,
                             width: 300,
@@ -361,12 +380,12 @@ class _SearchpageState extends State<Searchpage> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      (follow.image != null)
+                      (_follow[index] != null)
                           ? CircleAvatar(
                               radius:
                                   30, // You can adjust the radius as per your needs
                               child: ClipOval(
-                                  child: (follow.image != null)
+                                  child: (follow.image != '')
                                       ? Image.network(
                                           'http://localhost:8000/api${follow.image}',
                                           width: 60,
@@ -395,7 +414,7 @@ class _SearchpageState extends State<Searchpage> {
                         ),
                       ),
                       SizedBox(width: 10.0),
-                      
+
                       FollowButton(
                         follow: follow,
                         dio: _dio,
@@ -464,16 +483,11 @@ class _SearchpageState extends State<Searchpage> {
       },
     ));
   }
-
-
-
-
-  
 }
 
 class FollowButton extends StatefulWidget {
   final FollowingsModel follow;
-   final dio ;
+  final dio;
 
   const FollowButton({required this.follow, required this.dio});
 
@@ -508,7 +522,7 @@ class _FollowButtonState extends State<FollowButton> {
         final String state = responseBody['state'];
 
         setState(() {
-          usersFollow = state ;
+          usersFollow = state;
         });
 
         print('follow1: $response');
@@ -517,19 +531,19 @@ class _FollowButtonState extends State<FollowButton> {
         print('folcookie: $cookie');
       },
       child: Container(
-          height: 30,
-                          width: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(15),
-                          ), // Button container details
-                     child:Center(     
-        child: Text(
-          (usersFollow == 'unfollow') ? 'Follow' : 'unFollow',
-          style: TextStyle(
-            color: Colors.white,
+        height: 30,
+        width: 100,
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(15),
+        ), // Button container details
+        child: Center(
+          child: Text(
+            (usersFollow == 'unfollow') ? 'Follow' : 'unFollow',
+            style: TextStyle(
+              color: Colors.white,
+            ),
           ),
-        ),
         ),
       ),
     );

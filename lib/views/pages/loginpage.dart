@@ -23,8 +23,8 @@ class Loginpage extends StatefulWidget {
 class _LoginpageState extends State<Loginpage> {
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
-  // GlobalKey<FormState> scaffoldKey = GlobalKey<FormState>();
-  // GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> scaffoldKey = GlobalKey<FormState>();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   ///google authantication
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -86,7 +86,7 @@ class _LoginpageState extends State<Loginpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // key: scaffoldKey,
+      key: scaffoldKey,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 11.0),
@@ -140,33 +140,33 @@ class _LoginpageState extends State<Loginpage> {
                   ),
                 ),
               ),
-              SizedBox(height: 6.0),
-              Container(
-                width: double.infinity,
-                height: 40.0,
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    // Handle sign in with Github logic here
-                  },
-                  icon: Image.asset(
-                    'assets/GitHub-Mark.png',
-                    height: 20,
-                    width: 20,
-                  ),
-                  label: Text('Sign in with Github'),
-                  style: ButtonStyle(
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                            13.0), // Specify desired radius
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              // SizedBox(height: 6.0),
+              // Container(
+              //   width: double.infinity,
+              //   height: 40.0,
+              //   child: OutlinedButton.icon(
+              //     onPressed: () {
+              //       // Handle sign in with Github logic here
+              //     },
+              //     icon: Image.asset(
+              //       'assets/GitHub-Mark.png',
+              //       height: 20,
+              //       width: 20,
+              //     ),
+              //     label: Text('Sign in with Github'),
+              //     style: ButtonStyle(
+              //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              //         RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(
+              //               13.0), // Specify desired radius
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
               SizedBox(height: 9.0),
               Form(
-                // key: _formKey,
+                key: _formKey,
                 child: Column(
                   children: [
                     // Padding(
@@ -176,7 +176,7 @@ class _LoginpageState extends State<Loginpage> {
                       controller: username,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter Mail example@email.com ';
+                          return 'Please enter username ';
                         }
                         // Regular expression to validate date in format 'dd/MM/yyyy'
                         final mailRegex = RegExp(r'^[a-zA-Z0-9_-]+$');
@@ -227,7 +227,7 @@ class _LoginpageState extends State<Loginpage> {
                   onPressed: () async {
                     //  String email = username.text;
                     //  String password = password.text;
-                    // if (_formKey.currentState!.validate()) {
+                    if (_formKey.currentState!.validate()) {
                     /////test Api////
                     final authData = await getDataFromApi();
                     final dio = Dio();
@@ -280,11 +280,11 @@ class _LoginpageState extends State<Loginpage> {
                             ])),
                       );
 
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) {
-                          return Splashpage();
-                        }),
-                      );
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(builder: (context) {
+                      //     return Splashpage();
+                      //   }),
+                      // );
 
                       if (response.statusCode == 200) {
                         final responseData = response.data;
@@ -316,11 +316,11 @@ class _LoginpageState extends State<Loginpage> {
                     //     ),
                     //   ),
                     // );
-                    // Navigator.of(context)
-                    //     .push(MaterialPageRoute(builder: (context) {
-                    //   return Splashpage();
-                    // }));
-                    // }
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) {
+                      return Splashpage();
+                    }));
+                    }
                   },
                   icon: Icon(Icons.login, color: Colors.white),
                   label: Text('Login', style: TextStyle(color: Colors.white)),

@@ -58,9 +58,8 @@ class _HomepageState extends State<Homepage> {
   // late Future<List<PostModel>> _postList;
   bool loaded = false;
   bool ischangecolor = false;
+  String? userLike;
 
-  
-   
   final cookie = getCookie('acessToken');
   // final id = getCookie('userid');
   final username = getCookie('username');
@@ -73,7 +72,6 @@ class _HomepageState extends State<Homepage> {
     getUserData();
     getAllPostsData();
     loaded = false;
-    
   }
 
   Future<dynamic> getAllPostsData() async {
@@ -278,9 +276,9 @@ class _HomepageState extends State<Homepage> {
                 )),
             floatingActionButton: FloatingActionButton(
               onPressed: () {
-                 setCookie('userid',_user!.id.toString());
-                 final id = getCookie('userid');
-                  print('iid :$id'); 
+                setCookie('userid', _user!.id.toString());
+                final id = getCookie('userid');
+                print('iid :$id');
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => NewTweet()));
               },
@@ -366,9 +364,9 @@ class _HomepageState extends State<Homepage> {
                             const Divider(
                               thickness: 1.5,
                             ),
-                            const SizedBox(
-                              height: 2,
-                            ),
+                            // const SizedBox(
+                            //   height: 2,
+                            // ),
                             Column(
                               //من اول هنا
                               children: [
@@ -382,11 +380,16 @@ class _HomepageState extends State<Homepage> {
                                 for (int i = 0; i < _post.length; i++)
 
                                   // return
-                                  SizedBox(
+                                  (_post[i].media.length > 0)?SizedBox(
                                       height:
                                           MediaQuery.of(context).size.height *
                                               0.6,
-                                      child: PostBodyBuilder(i)),
+                                      child: PostBodyBuilder(i)):SizedBox(
+                                        height:
+                                          MediaQuery.of(context).size.height *
+                                              0.6,
+                                      child: PostBodyBuilder(i)
+                                      )
                               ],
                             ),
                           ],
@@ -400,7 +403,7 @@ class _HomepageState extends State<Homepage> {
   }
 
   Widget PostBodyBuilder(int i) {
-    return Container(
+    return (_post[i].media.length > 0)? Container(
       child: Card(
         // shape: RoundedRectangleBorder(
         //   borderRadius:
@@ -421,7 +424,7 @@ class _HomepageState extends State<Homepage> {
             //   ),
             // );
           },
-          child: Padding(
+          child:Padding(
             padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -510,7 +513,7 @@ class _HomepageState extends State<Homepage> {
                   ],
                 ),
                 SizedBox(height: 7),
-                Center(
+               (_post[i].media.length > 0) ?Center(
                     child: (_post[i].media.length > 0)
                         ? AspectRatio(
                             aspectRatio: 18 / 7,
@@ -519,6 +522,8 @@ class _HomepageState extends State<Homepage> {
                                   //  _post.length,
                                   _post[i].media.length,
                               itemBuilder: (context, index) {
+                                final post = _post[index].media;
+                                bool ischangecolor = false;
                                 return ListTile(
                                     title: Center(
                                   child: ClipRRect(
@@ -542,26 +547,283 @@ class _HomepageState extends State<Homepage> {
                               },
                             ),
                           )
-                        : SizedBox(height: 140)),
-                SizedBox(height: 15),
+                        : ListTile()
+                        ):Center(),
+                // SizedBox(height: 15),
                 Expanded(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       InkWell(
+                           onTap: () async {
+    final dio = Dio();
+    final cookie = getCookie('acessToken');
+    final id = _post[i].id; // Remove unnecessary curly braces
+    print(id);
+    
+    try {
+      final response = await dio.put(
+        'http://localhost:8000/api/tweet/like/${id}',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $cookie',
+          },
+        ),
+        data: {
+          'client_id': 'pYCSiQllhFFivVInLE7Y4DHEdYSqkGgG3jJMxcQd',
+        },
+      );
+
+      final Map<String, dynamic> responseBody = response.data;
+      final String state = responseBody['state'];
+
+      setState(() {
+        userLike = state;
+      });
+
+      print('follow1: $response');
+      print('Following: $userLike');
+      // print('follow3: $state');
+      print('cookie: $cookie');
+    } catch (error) {
+      print('Error: $error');
+    }
+  },
+  child: Icon(
+    Icons.favorite,
+    color: (userLike == 'dislike') ? Colors.red : Colors.grey,
+  ),
+),
+SizedBox(width: 8),
+Text(
+  '${(userLike == 'dislike') ? _post[i].likes.count-- : _post[i].likes.count++}',
+),
+                      SizedBox(width: 90),
+                      InkWell(
                           onTap: () {
-                            setState(() {
-                              ischangecolor = !ischangecolor;
-                            });
+                            // setState(() {
+                            //   ischangecolor =
+                            //       !ischangecolor;
+                            // });
                           },
-                          child: Icon(Icons.favorite,
-                              color: ischangecolor ? Colors.grey : Colors.red)),
+                          child: Icon(Icons.comment, color: Colors.blue)),
                       SizedBox(width: 8),
                       // for (int i = 0;
                       //     i > _post.length;
                       //     i++)
-                      Text(
-                          '${ischangecolor ? _post[i].likes.count++ : _post[i].likes.count--}'),
+                      Text('${_post[i].comments.count}'),
+                      SizedBox(width: 90),
+                      InkWell(
+                          onTap: () {
+                            //  setState(() {
+                            // ischangecolor = !ischangecolor;
+                            // });
+                          },
+                          child: Icon(Icons.reply, color: Colors.green)),
+                      SizedBox(width: 8),
+                      // for (int i = 0;
+                      //     i > _post.length;
+                      //     i++)
+                      Text('${_post[i].replies.count}'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ):Container(
+      // height:450,
+      transform: Matrix4.translationValues(10.0, -50.0, 50.0),
+    // padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      child: Card(
+        // shape: RoundedRectangleBorder(
+        //   borderRadius:
+        //       BorderRadius.circular(5.0),
+        //   side: BorderSide(
+        //       color: Colors.grey.shade300),
+        // ),
+        margin: EdgeInsets.symmetric(
+            vertical: 90.0, horizontal: 0.0),
+        child: InkWell(
+         
+          child:Padding(
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // if (_post.length != null &&
+                //     _post.isNotEmpty)
+                Stack(
+                  children: [
+                    // if (_post.length != null && _post.isNotEmpty)
+
+                    Row(
+                      children: [
+                        // for (int i =
+                        //         _post.length - 1;
+                        //     i < _post.length;
+                        //     i++)
+                        if (_post[i].user.image != null)
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            child: ClipOval(
+                              child: CachedNetworkImage(
+                                imageUrl:
+                                    'http://localhost:8000/api${_post[i].user.image}',
+                                placeholder: (context, url) =>
+                                    CircularProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
+                                fit: BoxFit.cover,
+                                width: 70,
+                                height: 70,
+                              ),
+                            ),
+                          ),
+
+                        SizedBox(width: 25),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // for (int i = 0; i > _post.length;  i++)
+                            Text(
+                              '${_post[i].user.fullname}',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              '@${_post[i].user.username}',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.blueGrey,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Posted on ${(_post[i].createAt)}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 15),
+                    Padding(
+                      padding:
+                          // (_post[i].media.length >0) ?
+                          EdgeInsets.only(top: 100),
+                      //: EdgeInsets.only(
+                      // top: 130),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _post[i].content,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 7),
+              //  (_post[i].media.length > 0) ?Center(
+              //       child: (_post[i].media.length > 0)
+              //           ? AspectRatio(
+              //               aspectRatio: 18 / 7,
+              //               child: ListView.builder(
+              //                 itemCount:
+              //                     //  _post.length,
+              //                     _post[i].media.length,
+              //                 itemBuilder: (context, index) {
+              //                   final post = _post[index].media;
+              //                   bool ischangecolor = false;
+              //                   return ListTile(
+              //                       title: Center(
+              //                     child: ClipRRect(
+              //                       borderRadius: BorderRadius.circular(5.0),
+              //                       child: AspectRatio(
+              //                           aspectRatio: 20 / 10,
+              //                           // if (post.user.image != null)
+              //                           child: CachedNetworkImage(
+              //                             imageUrl:
+              //                                 'http://localhost:8000/api${_post[i].media[index]['file']}',
+              //                             placeholder: (context, url) =>
+              //                                 CircularProgressIndicator(),
+              //                             errorWidget: (context, url, error) =>
+              //                                 Icon(Icons.error),
+              //                             fit: BoxFit.cover,
+              //                             width: 100,
+              //                             height: 100,
+              //                           )),
+              //                     ),
+              //                   ));
+              //                 },
+              //               ),
+              //             )
+              //           : ListTile()
+              //           ):Center(),
+                // SizedBox(height: 15),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      InkWell(
+                           onTap: () async {
+    final dio = Dio();
+    final cookie = getCookie('acessToken');
+    final id = _post[i].id; // Remove unnecessary curly braces
+    print(id);
+    
+    try {
+      final response = await dio.put(
+        'http://localhost:8000/api/tweet/like/${id}',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $cookie',
+          },
+        ),
+        data: {
+          'client_id': 'pYCSiQllhFFivVInLE7Y4DHEdYSqkGgG3jJMxcQd',
+        },
+      );
+
+      final Map<String, dynamic> responseBody = response.data;
+      final String state = responseBody['state'];
+
+      setState(() {
+        userLike = state;
+      });
+
+      print('follow1: $response');
+      print('Following: $userLike');
+      // print('follow3: $state');
+      print('cookie: $cookie');
+    } catch (error) {
+      print('Error: $error');
+    }
+  },
+  child: Icon(
+    Icons.favorite,
+    color: (userLike == 'dislike') ? Colors.red : Colors.grey,
+  ),
+),
+SizedBox(width: 8),
+Text(
+  '${(userLike == 'dislike') ? _post[i].likes.count-- : _post[i].likes.count++}',
+),
                       SizedBox(width: 90),
                       InkWell(
                           onTap: () {
@@ -600,3 +862,87 @@ class _HomepageState extends State<Homepage> {
     );
   }
 }
+
+
+// 
+
+// class FollowButton extends StatefulWidget {
+//   final PostModel like;
+//    final dio ;
+   
+
+//   const FollowButton({required this.like, required this.dio});
+
+//   @override
+//   _FollowButtonState createState() => _FollowButtonState();
+// }
+
+// class _FollowButtonState extends State<FollowButton> {
+// //  late bool? isFollowing ;
+//   String? usersLike;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return  InkWell(
+//                           onTap: () {
+//                             setState(() {
+//                               ischangecolor = !ischangecolor;
+//                             });
+//                           },
+//                           child: Icon(Icons.favorite,
+//                               color: ischangecolor ? Colors.grey : Colors.red)),
+                      // SizedBox(width: 8),
+                      // // for (int i = 0;
+                      // //     i > _post.length;
+                      // //     i++)
+                      // Text(
+                      //     '${ischangecolor ? _post[i].likes.count++ : _post[i].likes.count--}'),
+
+    // InkWell(
+    //   onTap: () async {
+    //     final cookie = getCookie('acessToken');
+    //     final username = getCookie('username');
+    //     final response = await widget.dio.put(
+    //       'http://localhost:8000/api/user/follow/$username',
+    //       options: Options(
+    //         headers: {
+    //           'Content-Type': 'application/json',
+    //           'Authorization': 'Bearer $cookie',
+    //         },
+    //       ),
+    //       data: {
+    //         'client_id': 'pYCSiQllhFFivVInLE7Y4DHEdYSqkGgG3jJMxcQd',
+    //       },
+    //     );
+
+    //     final Map<String, dynamic> responseBody = response.data;
+    //     final String state = responseBody['state'];
+
+    //     setState(() {
+    //       usersLike = state ;
+    //     });
+
+    //     print('follow1: $response');
+    //     // print('isFollowing: $isFollowing');
+    //     print('follow3: $state');
+    //     print('folcookie: $cookie');
+    //   },
+    //   child: Container(
+    //       height: 30,
+    //                       width: 100,
+    //                       decoration: BoxDecoration(
+    //                         color: Colors.black,
+    //                         borderRadius: BorderRadius.circular(15),
+    //                       ), // Button container details
+    //                  child:Center(     
+    //     child: Text(
+    //       (usersLike == 'unfollow') ? 'Follow' : 'unFollow',
+    //       style: TextStyle(
+    //         color: Colors.white,
+    //       ),
+    //     ),
+    //     ),
+    //   ),
+    // );
+  // }
+// }
