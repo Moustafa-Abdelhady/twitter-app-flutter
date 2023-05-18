@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:twitter_clone/screens/chat_screen.dart';
 import 'package:twitter_clone/views/pages/homepage.dart';
 import 'package:twitter_clone/views/pages/searchpage.dart';
 import 'package:twitter_clone/views/pages/massegepage.dart';
@@ -25,8 +26,9 @@ class _BottombarState extends State<Bottombar> {
     Homepage(),
     Searchpage(),
     Profilepage(),
-    Notificationpage(),
+    // Notificationpage(),
     Massegepage(),
+    // ChatScreen(),
 
   ];
 
@@ -60,12 +62,12 @@ class _BottombarState extends State<Bottombar> {
               ),
               label: 'engy'
               ),
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.notifications,
-              ),
-              label: 'engy'
-              ),
+          // BottomNavigationBarItem(
+          //     icon: Icon(
+          //       Icons.notifications,
+          //     ),
+          //     label: 'engy'
+          //     ),
           BottomNavigationBarItem(
               icon: Icon(
                 Icons.mail,

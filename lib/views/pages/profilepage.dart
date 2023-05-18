@@ -11,8 +11,23 @@ import '../../models/userModel.dart';
 import '../../services/user_data.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+
+String? getCookie(String key) {
+  final cookies = html.document.cookie!.split(';');
+  for (var cookie in cookies) {
+    final keyValue = cookie.split('=');
+    if (keyValue[0].trim() == key) {
+      return keyValue[1];
+    }
+  }
+  return null;
+}
+
 class Profilepage extends StatefulWidget {
   const Profilepage({Key? key}) : super(key: key);
+
+
+
 
   @override
   // ignore: library_private_types_in_public_api
@@ -25,9 +40,14 @@ class _ProfilepageState extends State<Profilepage> {
   // late Future<List<PostModel>> _postList;
   bool ischangecolor = false;
 
+
+
   //users
   final UserService _userService = UserService();
   UserModel? _user;
+
+ final userid = getCookie('userid');
+
 
   @override
   void initState() {
@@ -36,15 +56,20 @@ class _ProfilepageState extends State<Profilepage> {
     // _postList = PostService().postData();
     getUserData();
     getPostsData();
+   
   }
 
   Future<dynamic> getPostsData() async {
     // final postService = PostService();
-    final posts = await _postService.postData();
+    final allPosts = await _postService.postData();
     // final _postList = await postService.postData();
-
+      for(final post in allPosts){
+        if(post.user.id.toString() == userid){
+          _post.add(post);
+        }
+      }
     setState(() {
-      _post = posts;
+     
     });
   }
 

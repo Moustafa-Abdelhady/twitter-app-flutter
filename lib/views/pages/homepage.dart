@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 // import 'dart:convert' as convert;
 // import 'package:http/http.dart' as http;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:twitter_clone/views/pages/massegepage.dart';
 import 'package:twitter_clone/views/pages/profilepage.dart';
 // import 'package:twitter_clone/views/pages/loginpage.dart';
 import 'package:twitter_clone/views/pages/newTweet.dart';
 import 'package:twitter_clone/main.dart';
 import 'dart:html' as html;
 import 'package:dio/dio.dart';
+import 'package:twitter_clone/views/pages/searchpage.dart';
 import '../../models/postsModel.dart';
 import '../../services/post_data.dart';
 import '../../models/userModel.dart';
@@ -82,6 +84,7 @@ class _HomepageState extends State<Homepage> {
     if (posts.isNotEmpty) {
       setState(() {
         _post = posts;
+
         ischangecolor = !ischangecolor;
         print('loool$_post');
         loaded = false;
@@ -100,6 +103,7 @@ class _HomepageState extends State<Homepage> {
         print('oo${_user}');
       });
     }
+    setCookie('userid', _user!.id.toString());
   }
 
   @override
@@ -187,6 +191,7 @@ class _HomepageState extends State<Homepage> {
                                                   fontWeight: FontWeight.bold),
                                             )
                                           : Text('0 '),
+                                      SizedBox(width: 10),
                                       Text(
                                         'Following',
                                         style: TextStyle(
@@ -205,6 +210,7 @@ class _HomepageState extends State<Homepage> {
                                                   fontWeight: FontWeight.bold),
                                             )
                                           : Text(' 0 '),
+                                      SizedBox(width: 10),
                                       Text(
                                         'Followers',
                                         style: TextStyle(
@@ -232,43 +238,53 @@ class _HomepageState extends State<Homepage> {
                               ),
                               ListTile(
                                 leading: Icon(
-                                  Icons.line_style_outlined,
+                                  Icons.search,
                                   color: Colors.black,
                                 ),
                                 title: Text(
-                                  'Topics',
+                                  'People may know',
                                   style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w600),
                                 ),
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Searchpage()));
+                                },
                               ),
                               ListTile(
                                 leading: Icon(
-                                  Icons.list_alt_sharp,
+                                  Icons.message,
                                   color: Colors.black,
                                 ),
                                 title: Text(
-                                  'List',
+                                  'Messages',
                                   style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w600),
                                 ),
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Massegepage()));
+                                },
                               ),
-                              ListTile(
-                                leading: Icon(
-                                  Icons.bookmark,
-                                  color: Colors.black,
-                                ),
-                                title: Text(
-                                  'Bookmark',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                onTap: () {},
-                              ),
+                              // ListTile(
+                              //   leading: Icon(
+                              //     Icons.bookmark,
+                              //     color: Colors.black,
+                              //   ),
+                              //   title: Text(
+                              //     'Bookmark',
+                              //     style: TextStyle(
+                              //         fontSize: 18,
+                              //         fontWeight: FontWeight.w600),
+                              //   ),
+                              //   onTap: () {},
+                              // ),
                             ],
                           )
                         : Center(child: CircularProgressIndicator())
@@ -277,7 +293,6 @@ class _HomepageState extends State<Homepage> {
                 )),
             floatingActionButton: FloatingActionButton(
               onPressed: () {
-                setCookie('userid', _user!.id.toString());
                 final id = getCookie('userid');
                 print('iid :$id');
                 Navigator.push(context,
@@ -387,7 +402,10 @@ class _HomepageState extends State<Homepage> {
                                       //         .size
                                       //         .height *
                                       //     0.6,
-                                      child: PostBodyBuilder(i))
+                                      child: PostBodyBuilder(
+                                    i,
+                                    _post,
+                                  ))
                                 // : SizedBox(
                                 //     height: MediaQuery.of(context)
                                 //             .size
@@ -406,10 +424,12 @@ class _HomepageState extends State<Homepage> {
         : const Center(child: CircularProgressIndicator());
   }
 
-  Widget PostBodyBuilder(int i) {
+  Widget PostBodyBuilder(int i, List<PostModel> _post) {
+    final dio = Dio();
+    final id = _post[i].id;
     // (_post[i].media.length > 0)?
     return Card(
-      margin: EdgeInsets.only(bottom: 16.0),
+      margin: EdgeInsets.only(bottom: 8.0),
       child: InkWell(
         onTap: () {
           // Navigator.push(
@@ -519,6 +539,7 @@ class _HomepageState extends State<Homepage> {
                           //  _post.length,
                           _post[i].media.length,
                       itemBuilder: (context, index) {
+                        String? userLike;
                         final post = _post[index].media;
                         bool ischangecolor = false;
                         return ClipRRect(
@@ -547,11 +568,17 @@ class _HomepageState extends State<Homepage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // FollowButton(
+                  //   i: i,
+                  //   like: _post,
+                  // ),
+
                   InkWell(
                     onTap: () async {
+                      // final id = _post[i].id;
                       final dio = Dio();
                       final cookie = getCookie('acessToken');
-                      final id = _post[i].id; // Remove unnecessary curly braces
+                      // Remove unnecessary curly braces
                       print(id);
 
                       try {
@@ -574,6 +601,7 @@ class _HomepageState extends State<Homepage> {
 
                         setState(() {
                           userLike = state;
+                        
                         });
 
                         print('follow1: $response');
@@ -586,13 +614,15 @@ class _HomepageState extends State<Homepage> {
                     },
                     child: Icon(
                       Icons.favorite,
-                      color: (userLike == 'dislike') ? Colors.red : Colors.grey,
+                      color: (userLike == 'dislike') ? Colors.grey : Colors.red,
                     ),
                   ),
                   SizedBox(width: 8),
-                  Text(
-                    '${(userLike == 'dislike') ? _post[i].likes.count-- : _post[i].likes.count++}',
-                  ),
+                  // for (int i = 0; i < _post[i].likes.usersList.length;)
+                  if (_post[i].id == id)
+                    Text(
+                      '${(userLike == 'dislike') ? _post[i].likes.count-- : _post[i].likes.count++}',
+                    ),
                   SizedBox(width: 90),
                   InkWell(
                       onTap: () {
@@ -627,244 +657,18 @@ class _HomepageState extends State<Homepage> {
         ),
       ),
     );
-//     ):Container(
-//       // height:450,
-//       transform: Matrix4.translationValues(10.0, -50.0, 50.0),
-//     // padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-//       child: Card(
-//         // shape: RoundedRectangleBorder(
-//         //   borderRadius:
-//         //       BorderRadius.circular(5.0),
-//         //   side: BorderSide(
-//         //       color: Colors.grey.shade300),
-//         // ),
-//         margin: EdgeInsets.symmetric(
-//             vertical: 90.0, horizontal: 0.0),
-//         child: InkWell(
-
-//           child:Padding(
-//             padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40.0),
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 // if (_post.length != null &&
-//                 //     _post.isNotEmpty)
-//                 Stack(
-//                   children: [
-//                     // if (_post.length != null && _post.isNotEmpty)
-
-//                     Row(
-//                       children: [
-//                         // for (int i =
-//                         //         _post.length - 1;
-//                         //     i < _post.length;
-//                         //     i++)
-//                         if (_post[i].user.image != null)
-//                           Positioned(
-//                             top: 0,
-//                             left: 0,
-//                             child: ClipOval(
-//                               child: CachedNetworkImage(
-//                                 imageUrl:
-//                                     'http://localhost:8000/api${_post[i].user.image}',
-//                                 placeholder: (context, url) =>
-//                                     CircularProgressIndicator(),
-//                                 errorWidget: (context, url, error) =>
-//                                     Icon(Icons.error),
-//                                 fit: BoxFit.cover,
-//                                 width: 70,
-//                                 height: 70,
-//                               ),
-//                             ),
-//                           ),
-
-//                         SizedBox(width: 25),
-//                         Column(
-//                           crossAxisAlignment: CrossAxisAlignment.start,
-//                           children: [
-//                             // for (int i = 0; i > _post.length;  i++)
-//                             Text(
-//                               '${_post[i].user.fullname}',
-//                               style: TextStyle(
-//                                   fontWeight: FontWeight.bold, fontSize: 16),
-//                             ),
-//                             SizedBox(height: 8),
-//                             Text(
-//                               '@${_post[i].user.username}',
-//                               style: TextStyle(
-//                                 fontSize: 13,
-//                                 color: Colors.blueGrey,
-//                               ),
-//                             ),
-//                             SizedBox(height: 8),
-//                             Text(
-//                               'Posted on ${(_post[i].createAt)}',
-//                               style: TextStyle(
-//                                 fontSize: 12,
-//                                 color: Colors.grey,
-//                               ),
-//                             ),
-//                           ],
-//                         ),
-//                       ],
-//                     ),
-//                     SizedBox(height: 15),
-//                     Padding(
-//                       padding:
-//                           // (_post[i].media.length >0) ?
-//                           EdgeInsets.only(top: 100),
-//                       //: EdgeInsets.only(
-//                       // top: 130),
-//                       child: Row(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Text(
-//                             _post[i].content,
-//                             style: TextStyle(
-//                               fontSize: 20,
-//                               fontWeight: FontWeight.bold,
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(height: 7),
-//               //  (_post[i].media.length > 0) ?Center(
-//               //       child: (_post[i].media.length > 0)
-//               //           ? AspectRatio(
-//               //               aspectRatio: 18 / 7,
-//               //               child: ListView.builder(
-//               //                 itemCount:
-//               //                     //  _post.length,
-//               //                     _post[i].media.length,
-//               //                 itemBuilder: (context, index) {
-//               //                   final post = _post[index].media;
-//               //                   bool ischangecolor = false;
-//               //                   return ListTile(
-//               //                       title: Center(
-//               //                     child: ClipRRect(
-//               //                       borderRadius: BorderRadius.circular(5.0),
-//               //                       child: AspectRatio(
-//               //                           aspectRatio: 20 / 10,
-//               //                           // if (post.user.image != null)
-//               //                           child: CachedNetworkImage(
-//               //                             imageUrl:
-//               //                                 'http://localhost:8000/api${_post[i].media[index]['file']}',
-//               //                             placeholder: (context, url) =>
-//               //                                 CircularProgressIndicator(),
-//               //                             errorWidget: (context, url, error) =>
-//               //                                 Icon(Icons.error),
-//               //                             fit: BoxFit.cover,
-//               //                             width: 100,
-//               //                             height: 100,
-//               //                           )),
-//               //                     ),
-//               //                   ));
-//               //                 },
-//               //               ),
-//               //             )
-//               //           : ListTile()
-//               //           ):Center(),
-//                 // SizedBox(height: 15),
-//                 Expanded(
-//                   child: Row(
-//                     mainAxisAlignment: MainAxisAlignment.center,
-//                     children: [
-//                       InkWell(
-//                            onTap: () async {
-//     final dio = Dio();
-//     final cookie = getCookie('acessToken');
-//     final id = _post[i].id; // Remove unnecessary curly braces
-//     print(id);
-
-//     try {
-//       final response = await dio.put(
-//         'http://localhost:8000/api/tweet/like/${id}',
-//         options: Options(
-//           headers: {
-//             'Content-Type': 'application/json',
-//             'Authorization': 'Bearer $cookie',
-//           },
-//         ),
-//         data: {
-//           'client_id': 'pYCSiQllhFFivVInLE7Y4DHEdYSqkGgG3jJMxcQd',
-//         },
-//       );
-
-//       final Map<String, dynamic> responseBody = response.data;
-//       final String state = responseBody['state'];
-
-//       setState(() {
-//         userLike = state;
-//       });
-
-//       print('follow1: $response');
-//       print('Following: $userLike');
-//       // print('follow3: $state');
-//       print('cookie: $cookie');
-//     } catch (error) {
-//       print('Error: $error');
-//     }
-//   },
-//   child: Icon(
-//     Icons.favorite,
-//     color: (userLike == 'dislike') ? Colors.red : Colors.grey,
-//   ),
-// ),
-// SizedBox(width: 8),
-// Text(
-//   '${(userLike == 'dislike') ? _post[i].likes.count-- : _post[i].likes.count++}',
-// ),
-//                       SizedBox(width: 90),
-//                       InkWell(
-//                           onTap: () {
-//                             // setState(() {
-//                             //   ischangecolor =
-//                             //       !ischangecolor;
-//                             // });
-//                           },
-//                           child: Icon(Icons.comment, color: Colors.blue)),
-//                       SizedBox(width: 8),
-//                       // for (int i = 0;
-//                       //     i > _post.length;
-//                       //     i++)
-//                       Text('${_post[i].comments.count}'),
-//                       SizedBox(width: 90),
-//                       InkWell(
-//                           onTap: () {
-//                             //  setState(() {
-//                             // ischangecolor = !ischangecolor;
-//                             // });
-//                           },
-//                           child: Icon(Icons.reply, color: Colors.green)),
-//                       SizedBox(width: 8),
-//                       // for (int i = 0;
-//                       //     i > _post.length;
-//                       //     i++)
-//                       Text('${_post[i].replies.count}'),
-//                     ],
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
   }
 }
 
-
-// 
-
 // class FollowButton extends StatefulWidget {
-//   final PostModel like;
-//    final dio ;
-   
+//   List<PostModel> like;
+//   int i;
+//   //  final dio;
 
-//   const FollowButton({required this.like, required this.dio});
+//   const FollowButton({
+//     required this.like,
+//     required this.i,
+//   });
 
 //   @override
 //   _FollowButtonState createState() => _FollowButtonState();
@@ -876,66 +680,54 @@ class _HomepageState extends State<Homepage> {
 
 //   @override
 //   Widget build(BuildContext context) {
-//     return  InkWell(
-//                           onTap: () {
-//                             setState(() {
-//                               ischangecolor = !ischangecolor;
-//                             });
-//                           },
-//                           child: Icon(Icons.favorite,
-//                               color: ischangecolor ? Colors.grey : Colors.red)),
-                      // SizedBox(width: 8),
-                      // // for (int i = 0;
-                      // //     i > _post.length;
-                      // //     i++)
-                      // Text(
-                      //     '${ischangecolor ? _post[i].likes.count++ : _post[i].likes.count--}'),
-
-    // InkWell(
-    //   onTap: () async {
-    //     final cookie = getCookie('acessToken');
-    //     final username = getCookie('username');
-    //     final response = await widget.dio.put(
-    //       'http://localhost:8000/api/user/follow/$username',
-    //       options: Options(
-    //         headers: {
-    //           'Content-Type': 'application/json',
-    //           'Authorization': 'Bearer $cookie',
-    //         },
-    //       ),
-    //       data: {
-    //         'client_id': 'pYCSiQllhFFivVInLE7Y4DHEdYSqkGgG3jJMxcQd',
-    //       },
-    //     );
-
-    //     final Map<String, dynamic> responseBody = response.data;
-    //     final String state = responseBody['state'];
-
-    //     setState(() {
-    //       usersLike = state ;
-    //     });
-
-    //     print('follow1: $response');
-    //     // print('isFollowing: $isFollowing');
-    //     print('follow3: $state');
-    //     print('folcookie: $cookie');
-    //   },
-    //   child: Container(
-    //       height: 30,
-    //                       width: 100,
-    //                       decoration: BoxDecoration(
-    //                         color: Colors.black,
-    //                         borderRadius: BorderRadius.circular(15),
-    //                       ), // Button container details
-    //                  child:Center(     
-    //     child: Text(
-    //       (usersLike == 'unfollow') ? 'Follow' : 'unFollow',
-    //       style: TextStyle(
-    //         color: Colors.white,
-    //       ),
-    //     ),
-    //     ),
-    //   ),
-    // );
-  // }
+//     return Container(
+     
+//         child: InkWell(
+//           onTap: () async {
+//             final dio = Dio();
+//             final cookie = getCookie('acessToken');
+//             final id = getCookie('userid'); // Remove unnecessary curly braces
+//             print(id);
+          
+//             try {
+//               final response = await dio.put(
+//                 'http://localhost:8000/api/tweet/like/${id}',
+//                 options: Options(
+//                   headers: {
+//                     'Content-Type': 'application/json',
+//                     'Authorization': 'Bearer $cookie',
+//                   },
+//                 ),
+//                 data: {
+//                   'client_id': 'pYCSiQllhFFivVInLE7Y4DHEdYSqkGgG3jJMxcQd',
+//                 },
+//               );
+          
+//               final Map<String, dynamic> responseBody = response.data;
+//               final String state = responseBody['state'];
+          
+//               setState(() {
+//                 usersLike = state;
+//               });
+          
+//               print('follow1: $response');
+//               print('Following: $usersLike');
+//               // print('follow3: $state');
+//               print('cookie: $cookie');
+//             } catch (error) {
+//               print('Error: $error');
+//             }
+//           },
+//           child: Icon(
+//             Icons.favorite,
+//             color: (usersLike == 'dislike') ? Colors.red : Colors.grey,
+//           ),
+//            SizedBox(width: 8),
+//           Text(
+//             '${(usersLike == 'dislike') ? _post[i].likes.count-- : _post[i].likes.count++}',
+//           ),
+//                ),
+      
+//     );
+//   }
 // }
