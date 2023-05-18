@@ -66,151 +66,157 @@ class _ProfilepageState extends State<Profilepage> {
     return Scaffold(
     
       body:
-          Column(
-        children: [
           SingleChildScrollView(
-             scrollDirection: Axis.vertical,
-  physics: const BouncingScrollPhysics(),
-  child: Column(
-    children: [
-      coverimage(_user),
-      profile(_user),
-    ],
-  ),
-),
-          // SizedBox(height:5),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _post.length,
-              itemBuilder: (context, index) {
-                final post = _post[index];
-
-                return Container(
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                      side: BorderSide(color: Colors.grey.shade300),
-                    ),
-                    margin:
-                        EdgeInsets.symmetric(vertical: 30.0, horizontal: 30.0),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PostDetailScreen(post: post),
-                          ),
-                        );
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 40.0),
-                        child: Row(
-                          children: [
-                            ClipOval(
-                              child: Container(
-                                width: 80,
-                                height: 120,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                ),
-                                child: CachedNetworkImage(
-                                  imageUrl:
-                                      'http://localhost:8000/api${post.user.image}',
-                                  placeholder: (context, url) =>
-                                      CircularProgressIndicator(),
-                                  errorWidget: (context, url, error) =>
-                                      Icon(Icons.error),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 10.0),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    post.user.fullname,
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    post.content,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 12.0,
-                                    ),
-                                  ),
-                                  SizedBox(height: 25),
-                                  Row(
-                                    //////////////
-                                    children: [
-                                      InkWell(
-                                          onTap: () {
-                                            // setState(() {
-                                            //   ischangecolor = !ischangecolor;
-                                            // });
-                                          },
-                                          child: Icon(Icons.favorite,
-                                              color: ischangecolor
-                                                  ? Colors.red
-                                                  : Colors.grey)),
-                                      SizedBox(width: 8),
-                                      Text(
-                                          '${ischangecolor ? post.likes.count++ : post.likes.count--}'),
-                                      SizedBox(width: 16),
-                                      InkWell(
-                                          onTap: () {
-                                            // setState(() {
-                                            // ischangecolor = !ischangecolor;
-                                            // });
-                                          },
-                                          child: Icon(Icons.comment,
-                                              color: Colors.blue)),
-                                      SizedBox(width: 8),
-                                      Text('${post.comments.count}'),
-                                      SizedBox(width: 16),
-                                      InkWell(
-                                          onTap: () {
-                                            //  setState(() {
-                                            // ischangecolor = !ischangecolor;
-                                            // });
-                                          },
-                                          child: Icon(Icons.reply,
-                                              color: Colors.green)),
-                                      SizedBox(width: 8),
-                                      Text('${post.replies.count}'),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(width: 10.0),
-                            IconButton(
-                              icon: Icon(Icons.more_vert),
-                              onPressed: () {},
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+            child: Expanded(
+              child: Column(
+                    children: [
+              // SingleChildScrollView(
+              //            scrollDirection: Axis.vertical,
+              // physics: const BouncingScrollPhysics(),
+              // child: 
+              // Column(
+               
+                // children: [
+                 
+                  coverimage(_user),
+                  profile(_user),
+                // ],
+              // ),
+                      // ),
+              // SizedBox(height:5),
+               ListView.builder(
+                 shrinkWrap: true,
+                 physics: NeverScrollableScrollPhysics(),
+                 itemCount: _post.length,
+                 itemBuilder: (context, index) {
+                   final post = _post[index];
+                      
+                    return Container(
+                     height: MediaQuery.of(context).size.height * 0.4,
+                    child: Card(
+                       shape: RoundedRectangleBorder(
+                         borderRadius: BorderRadius.circular(20.0),
+                         side: BorderSide(color: Colors.grey.shade300),
+                       ),
+                       margin:
+                           EdgeInsets.symmetric(vertical: 30.0, horizontal: 30.0),
+                       child: InkWell(
+                         onTap: () {
+                           Navigator.push(
+                             context,
+                             MaterialPageRoute(
+                               builder: (context) => PostDetailScreen(post: post),
+                             ),
+                           );
+                         },
+                         child: Padding(
+                           padding: EdgeInsets.symmetric(horizontal: 40.0),
+                           child: Row(
+                             children: [
+                               ClipOval(
+                                 child: Container(
+                                   width: 80,
+                                   height: 120,
+                                   decoration: BoxDecoration(
+                                     shape: BoxShape.circle,
+                                   ),
+                                   child: CachedNetworkImage(
+                                     imageUrl:
+                                         'http://localhost:8000/api${post.user.image}',
+                                     placeholder: (context, url) =>
+                                         CircularProgressIndicator(),
+                                     errorWidget: (context, url, error) =>
+                                         Icon(Icons.error),
+                                     fit: BoxFit.cover,
+                                   ),
+                                 ),
+                               ),
+                               SizedBox(width: 10.0),
+                               Expanded(
+                                 child: Column(
+                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                   mainAxisAlignment: MainAxisAlignment.center,
+                                   children: [
+                                     Text(
+                                       post.user.fullname,
+                                       style:
+                                           TextStyle(fontWeight: FontWeight.bold),
+                                     ),
+                                     Text(
+                                       post.content,
+                                       maxLines: 1,
+                                       overflow: TextOverflow.ellipsis,
+                                       style: TextStyle(
+                                         color: Colors.grey.shade600,
+                                         fontSize: 12.0,
+                                       ),
+                                     ),
+                                     SizedBox(height: 25),
+                                     Row(
+                                       //////////////
+                                       children: [
+                                         InkWell(
+                                             onTap: () {
+                                               // setState(() {
+                                               //   ischangecolor = !ischangecolor;
+                                               // });
+                                             },
+                                             child: Icon(Icons.favorite,
+                                                 color: ischangecolor
+                                                     ? Colors.red
+                                                     : Colors.grey)),
+                                         SizedBox(width: 8),
+                                         Text(
+                                             '${ischangecolor ? post.likes.count++ : post.likes.count--}'),
+                                         SizedBox(width: 16),
+                                         InkWell(
+                                             onTap: () {
+                                               // setState(() {
+                                               // ischangecolor = !ischangecolor;
+                                               // });
+                                             },
+                                             child: Icon(Icons.comment,
+                                                 color: Colors.blue)),
+                                         SizedBox(width: 8),
+                                         Text('${post.comments.count}'),
+                                         SizedBox(width: 16),
+                                         InkWell(
+                                             onTap: () {
+                                               //  setState(() {
+                                               // ischangecolor = !ischangecolor;
+                                               // });
+                                             },
+                                             child: Icon(Icons.reply,
+                                                 color: Colors.green)),
+                                         SizedBox(width: 8),
+                                         Text('${post.replies.count}'),
+                                       ],
+                                     ),
+                                   ],
+                                 ),
+                               ),
+                               SizedBox(width: 10.0),
+                               IconButton(
+                                 icon: Icon(Icons.more_vert),
+                                 onPressed: () {},
+                               ),
+                             ],
+                           ),
+                         ),
+                       ),
+                     ),
+                   );
+                 },
+               ),
+                    ],
                   ),
-                );
-              },
             ),
           ),
-        ],
-      ),
       //  ],
       // ),
     );
   }
-}
-
+  
 Widget coverimage(UserModel? _user) {
   return (_user?.profile?.coverImage != null)
       ? Container(
@@ -224,6 +230,8 @@ Widget coverimage(UserModel? _user) {
           radius: 30,
         );
 }
+
+
 
 Widget profile(UserModel? _user) {
   return Container(
@@ -352,6 +360,12 @@ Widget profile(UserModel? _user) {
         : Center(child: CircularProgressIndicator()),
   );
 }
+
+
+
+}
+
+
 
 class PostDetailScreen extends StatelessWidget {
   final PostModel post;
